@@ -38,7 +38,7 @@ public class Master : MonoBehaviour
     public float grannyMultiplier = 1;
 
     // PlayerScore
-    private int startScore = 50;
+    private int startScore = 200;
     public float womanScore;
     public float manScore;
     public float grannyScore;
@@ -175,7 +175,7 @@ public class Master : MonoBehaviour
 
     public void ProtectStore()
     {
-        if(_coins > priceProtect)
+        if(_coins >= priceProtect)
         {
             _currentStepsProtect += 5;
             _coins -= priceProtect;
@@ -194,5 +194,10 @@ public class Master : MonoBehaviour
         }
 
         stepsProtectText.text = _currentStepsProtect.ToString();
+    }
+
+    public void MixCards()
+    {
+        FindObjectOfType<SpawnGrid>().MixCards();
     }
 }

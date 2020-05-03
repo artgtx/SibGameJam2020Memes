@@ -25,10 +25,11 @@ public class StatusBarController : MonoBehaviour
 
     private object _locker = new object();
 
-    private Color colorUp = Color.green;
-    private Color colorDown = Color.red;
+    //private Color _currentColor;
 
-    private Color _currentColor;
+    [SerializeField] private Sprite spriteBad;
+    [SerializeField] private Sprite spriteNormal;
+    [SerializeField] private Sprite spriteGood;
     void Awake()
     {
         _maxProgress = progressObject.transform.localScale.y;
@@ -45,16 +46,8 @@ public class StatusBarController : MonoBehaviour
     {
         _needProgress = _maxProgress / 100 * persent;
         _needPersent = persent;
-        if (_needPersent > _persent)
-        {
-            _currentColor = colorUp;
-        }
-        else
-        {
-            _currentColor = colorDown;
-        }
-
-        progressObject.GetComponent<SpriteRenderer>().color = _currentColor;
+        
+        //progressObject.GetComponent<SpriteRenderer>().color = _currentColor;
 
         lock (_locker)
         {
@@ -89,13 +82,45 @@ public class StatusBarController : MonoBehaviour
             {
                 _progress += _shift;
             }
+
+            if(_progress > _maxProgress)
+            {
+                _progress = _maxProgress;
+            }
+            
+            if(_progress < 0.0)
+            {
+                _progress = 0;
+            }
+
+            ChangeColor();
+
             progressObject.transform.localScale = new Vector3(_x, _progress);
             yield return new WaitForSeconds(_waitTime);
         }
 
-        progressObject.GetComponent<SpriteRenderer>().color = _currentColor;
+        //progressObject.GetComponent<SpriteRenderer>().color = _currentColor;
 
         _persent = _needPersent;
+    }
+
+    private void ChangeColor()
+    {
+        float persent = _progress * 100 / _maxProgress;
+        if(persent < 20)
+        {
+            progressObject.GetComponent<SpriteRenderer>().sprite = spriteBad;
+            return;
+        }
+        if(persent >= 20 && persent < 70)
+        {
+            progressObject.GetComponent<SpriteRenderer>().sprite = spriteNormal;
+            return;
+        }
+        if (persent > 70)
+        {
+            progressObject.GetComponent<SpriteRenderer>().sprite = spriteGood;
+        }
     }
 
     /*IEnumerator ChangeColorCoroutine(int count)

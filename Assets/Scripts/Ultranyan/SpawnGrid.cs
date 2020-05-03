@@ -10,9 +10,8 @@ public class SpawnGrid : MonoBehaviour
     [SerializeField] private GameObject playerCard;
     
     
-    public IEnumerator MoveToPosition(Transform transform, Vector3 position, float timeToMove,int cardposition)
+    public IEnumerator MoveToPosition(Transform transform, Vector3 position, float timeToMove,int cardposition,Struct.CardType type_)
     {
-        Singletone.canMove = false;
         transform.gameObject.GetComponent<playerAnimationState>().walk();
         var currentPos = transform.position;
         var t = 0f;
@@ -22,41 +21,77 @@ public class SpawnGrid : MonoBehaviour
             transform.position = Vector3.Lerp(currentPos, position, t);
             yield return null;
         }
-        spawncard(playerPos);
-        playerPos = cardposition;
         transform.gameObject.GetComponent<playerAnimationState>().idle();
-        Singletone.canMove = true;
+        if (type_.type == Struct.CardType.Type.Mix)
+        {
+            playerPos = cardposition;
+            respawnCards();
+        }
+        else
+        {
+            moveCards(cardposition,playerPos);
+        }
+        
     }
-    
-  
+
+
+    public IEnumerator MoveToCardsCoroutine(int card,int cardTo,bool isLast)
+    {
+        
+        float timeToMove = 0.3f;
+        Transform transform=gridElements[card].GetComponent<GridElement>().currentCard.transform;
+        Vector3 position=gridElements[cardTo].transform.position;
+        gridElements[cardTo].GetComponent<GridElement>().currentCard = transform.gameObject;
+        
+        var currentPos = transform.position;
+        var t = 0f;
+        while(t < 1)
+        {
+            t += Time.deltaTime / timeToMove;
+            transform.position = Vector3.Lerp(currentPos, position, t);
+            yield return null;
+        }
+
+        if (isLast)
+        {
+            spawncard(card);
+            Singletone.canMove = true;
+        }
+
+    }
+
     public void spawncard(int count)
     {
         GameObject generatedCard = Generator.instance.GenerateCard();
         generatedCard.transform.position = gridElements[count].transform.position;
         generatedCard.transform.parent = gridElements[count].transform;
        // generatedCard.transform.position=Vector3.zero;
-       gridElements[count].GetComponent<GridElement>().currentCard = generatedCard ;
+        gridElements[count].GetComponent<GridElement>().currentCard = generatedCard ;
         
     }
 
     public void replaceCards(int cardID)
     {
+        Singletone.canMove = false;
         GridElement targetGridElement = gridElements[cardID].GetComponent<GridElement>();
         GridElement playerGridElement = gridElements[playerPos].GetComponent<GridElement>();
         Vector3 position = targetGridElement.currentCard.transform.position;
         Master.instance.DoStep();
         //вызов onBump
         targetGridElement.currentCard.GetComponent<Card>().OnBump();
+        Struct.CardType type_=targetGridElement.currentCard.GetComponent<Card>().type_;
         Destroy(targetGridElement.currentCard);
         
+        
         targetGridElement.currentCard = playerGridElement.currentCard;
+        playerGridElement.currentCard = null;
         
         foreach (var VARIABLE in FindObjectsOfType<Card>())
         {
             VARIABLE.OnIdle();
         }
 
-        StartCoroutine(MoveToPosition(playerGridElement.currentCard.transform,position,0.3f,cardID));
+        StartCoroutine(MoveToPosition(targetGridElement.currentCard.transform,position,0.3f,cardID,type_));
         
     }
 
@@ -96,7 +131,33 @@ public class SpawnGrid : MonoBehaviour
        
     }
 
-    //public AnimationClip walk;
+    public void destoyAllCards()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (i != playerPos)
+            {
+                print(playerPos);
+                Destroy(gridElements[i].GetComponent<GridElement>().currentCard); 
+            }
+        }
+    }
+
+    public void respawnCards()
+    {
+        destoyAllCards();
+        for (int i = 0; i < 9; i++)
+        {
+            if(i!=playerPos)
+            {
+                spawncard(i);
+            }
+        }
+
+       StartCoroutine("startAnimation");
+
+    }
+
     public void Start()
     {
         for (int i = 0; i < 9; i++)
@@ -113,10 +174,6 @@ public class SpawnGrid : MonoBehaviour
         }
 
         StartCoroutine("startAnimation");
-
-        //gridElements[playerPos].GetComponent<GridElement>().currentCard.GetComponent<Animation>().clip = walk;
-        //gridElements[playerPos].GetComponent<GridElement>().currentCard.GetComponent<Animation>().Play;
-
     }
 
     IEnumerator startAnimation()
@@ -145,5 +202,154 @@ public class SpawnGrid : MonoBehaviour
 
     }
     
+        public void moveCards(int newPosition, int oldPosition)
+    {
+        playerPos = newPosition;
+        if (Singletone.calculateColumnsRovs(newPosition)[0] != Singletone.calculateColumnsRovs(oldPosition)[0])
+        {
+            if (Singletone.calculateColumnsRovs(oldPosition)[0] == 2 && Singletone.calculateColumnsRovs(newPosition)[0] == 3)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[1] == 1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(0,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(1,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(2,oldPosition,true));
+                }
+            }
+            
+            else if (Singletone.calculateColumnsRovs(oldPosition)[0] == 2 && Singletone.calculateColumnsRovs(newPosition)[0] == 1)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[1] == 1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(6,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(7,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(8,oldPosition,true));
+                }
+            }
+            else if (Singletone.calculateColumnsRovs(oldPosition)[0] == 1 && Singletone.calculateColumnsRovs(newPosition)[0] == 2)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[1] == 1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(1,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(2,1,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(2,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(1,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(0,1,true));
+                }
+            }
+            else if (Singletone.calculateColumnsRovs(oldPosition)[0] == 3 && Singletone.calculateColumnsRovs(newPosition)[0] == 2)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[1] == 1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(7,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(8,7,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(8,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(7,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(6,7,true));
+                }
+            }
+
+        }
+
+        else if (Singletone.calculateColumnsRovs(newPosition)[1] != Singletone.calculateColumnsRovs(oldPosition)[1])
+        {
+            if (Singletone.calculateColumnsRovs(oldPosition)[1] == 2 && Singletone.calculateColumnsRovs(newPosition)[1] == 1)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[0]==1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(2,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(5,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(8,oldPosition,true));
+                }
+            }
+
+            else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 2 && Singletone.calculateColumnsRovs(newPosition)[1] == 3)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[0]==1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(0,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(3,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(6,oldPosition,true));
+                }
+            }
+            
+            else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 3 && Singletone.calculateColumnsRovs(newPosition)[1] == 2)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[0]==1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(5,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(8,5,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(2,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(5,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(2,5,true));
+                }
+            }
+            else if (Singletone.calculateColumnsRovs(oldPosition)[1] == 1 && Singletone.calculateColumnsRovs(newPosition)[1] == 2)
+            {
+                if (Singletone.calculateColumnsRovs(oldPosition)[0]==1)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(3,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(6,3,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==2)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(0,oldPosition,true));
+                }
+                else if (Singletone.calculateColumnsRovs(oldPosition)[0]==3)
+                {
+                    StartCoroutine(MoveToCardsCoroutine(3,oldPosition,false));
+                    StartCoroutine(MoveToCardsCoroutine(0,3,true));
+                }
+            }
+
+        }
+    }
+
     
+    public void MixCards()
+    {
+
+    }
 }

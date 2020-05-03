@@ -6,7 +6,7 @@ public class Card : MonoBehaviour
     [SerializeField] SpriteRenderer sr;
     [SerializeField] Sprite[] sprites;
 
-    Struct.CardType type_;
+    public Struct.CardType type_;
     Struct.Gender gender_;
     Struct.Media media_;
     float haterPower = 0;
@@ -57,6 +57,9 @@ public class Card : MonoBehaviour
                 break;
             case Struct.CardType.Type.Protect:
                 Master.instance.ProtectStore();
+                break;
+            case Struct.CardType.Type.Mix:
+                Master.instance.MixCards();
                 break;
         }
         

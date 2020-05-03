@@ -61,7 +61,7 @@
     {
         public enum Type
         {
-            Undefined, News, Hater, Coin, Protect, Glitch, Trap
+            Undefined, News, Hater, Coin, Protect, Mix, Trap
         }
 
         public Type type;
@@ -93,6 +93,6 @@
         new CardType(CardType.Type.Coin, 10),
         new CardType(CardType.Type.News, 70),
         new CardType(CardType.Type.Protect, 5),
-        new CardType(CardType.Type.Glitch, 5),
+        new CardType(CardType.Type.Mix, 5),
     };
 }

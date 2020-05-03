@@ -36,6 +36,7 @@ public class Generator : MonoBehaviour
 
     [SerializeField] private Sprite coinSprite;
     [SerializeField] private Sprite protectSprite;
+    [SerializeField] private Sprite mixSprite;
 
     [SerializeField] private Sprite exceptionSprite;
 
@@ -89,6 +90,12 @@ public class Generator : MonoBehaviour
                     case Struct.CardType.Type.Protect:
                         {
                             var sprite = protectSprite;
+                            cardScript.SetCard(Struct.cardTypes[i], sprite);
+                            return newCard;
+                        }
+                    case Struct.CardType.Type.Mix:
+                        {
+                            var sprite = mixSprite;
                             cardScript.SetCard(Struct.cardTypes[i], sprite);
                             return newCard;
                         }
