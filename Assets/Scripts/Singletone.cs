@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Singletone : MonoBehaviour
 {
-   public static bool canMove = true;
+    public static bool canMove = true;
+    public static bool canGo = true;
 
-   //надеюсь это дерьмо никто не увидит
-   public static int[] calculateColumnsRovs(int x)
+    //надеюсь это дерьмо никто не увидит
+    public static int[] calculateColumnsRovs(int x)
    {
       switch (x)
       {

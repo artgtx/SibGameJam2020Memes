@@ -34,9 +34,18 @@ public class Generator : MonoBehaviour
     [SerializeField] private Sprite spriteHaterWoman;
     [SerializeField] private Sprite spriteHaterMan;
 
+    [SerializeField] private Sprite spriteBoostGranny;
+    [SerializeField] private Sprite spriteBoostWoman;
+    [SerializeField] private Sprite spriteBoostMan;
+
+    [SerializeField] private Sprite spriteDebuffGranny;
+    [SerializeField] private Sprite spriteDebuffWoman;
+    [SerializeField] private Sprite spriteDebuffMan;
+
     [SerializeField] private Sprite coinSprite;
     [SerializeField] private Sprite protectSprite;
-    [SerializeField] private Sprite mixSprite;
+
+    [SerializeField] private Sprite[] mixSprites;
 
     [SerializeField] private Sprite exceptionSprite;
 
@@ -83,20 +92,31 @@ public class Generator : MonoBehaviour
                         }
                     case Struct.CardType.Type.Coin:
                         {
-                            var sprite = coinSprite;
-                            cardScript.SetCard(Struct.cardTypes[i], sprite);
+                            cardScript.SetCard(Struct.cardTypes[i], coinSprite);
                             return newCard;
                         }
                     case Struct.CardType.Type.Protect:
                         {
-                            var sprite = protectSprite;
-                            cardScript.SetCard(Struct.cardTypes[i], sprite);
+                            cardScript.SetCard(Struct.cardTypes[i], protectSprite);
                             return newCard;
                         }
                     case Struct.CardType.Type.Mix:
                         {
-                            var sprite = mixSprite;
-                            cardScript.SetCard(Struct.cardTypes[i], sprite);
+                            cardScript.SetCard(Struct.cardTypes[i], mixSprites);
+                            return newCard;
+                        }
+                    case Struct.CardType.Type.Boost:
+                        {
+                            var gender = Struct.genders[Random.Range(0, Struct.genders.Length)];
+                            var sprite = GetSpriteBoost(gender);
+                            cardScript.SetCard(Struct.cardTypes[i], sprite, gender);
+                            return newCard;
+                        }
+                    case Struct.CardType.Type.Debuff:
+                        {
+                            var gender = Struct.genders[Random.Range(0, Struct.genders.Length)];
+                            var sprite = GetSpriteDebuff(gender);
+                            cardScript.SetCard(Struct.cardTypes[i], sprite, gender);
                             return newCard;
                         }
                     default:
@@ -193,6 +213,48 @@ public class Generator : MonoBehaviour
             {
                 return spriteHaterMan;
             } 
+        }
+
+        return exceptionSprite;
+    }
+
+    private Sprite GetSpriteBoost(Struct.Gender gender)
+    {
+        switch (gender)
+        {
+            case Struct.Gender.Granny:
+                {
+                    return spriteBoostGranny;
+                }
+            case Struct.Gender.Woman:
+                {
+                    return spriteBoostWoman;
+                }
+            case Struct.Gender.Man:
+                {
+                    return spriteBoostMan;
+                }
+        }
+
+        return exceptionSprite;
+    }
+
+    private Sprite GetSpriteDebuff(Struct.Gender gender)
+    {
+        switch (gender)
+        {
+            case Struct.Gender.Granny:
+                {
+                    return spriteDebuffGranny;
+                }
+            case Struct.Gender.Woman:
+                {
+                    return spriteDebuffWoman;
+                }
+            case Struct.Gender.Man:
+                {
+                    return spriteDebuffMan;
+                }
         }
 
         return exceptionSprite;

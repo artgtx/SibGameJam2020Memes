@@ -61,7 +61,7 @@
     {
         public enum Type
         {
-            Undefined, News, Hater, Coin, Protect, Mix, Trap
+            Undefined, News, Hater, Coin, Protect, Mix, Boost, Debuff
         }
 
         public Type type;
@@ -89,10 +89,12 @@
     public static CardType[] cardTypes =
     {
         new CardType(CardType.Type.Undefined, 0),
-        new CardType(CardType.Type.Hater, 10),
+        new CardType(CardType.Type.Hater, 5),
         new CardType(CardType.Type.Coin, 10),
-        new CardType(CardType.Type.News, 70),
-        new CardType(CardType.Type.Protect, 5),
-        new CardType(CardType.Type.Mix, 5),
+        new CardType(CardType.Type.News, 73),
+        new CardType(CardType.Type.Protect, 3),
+        new CardType(CardType.Type.Mix, 3),
+        new CardType(CardType.Type.Boost, 3),
+        new CardType(CardType.Type.Debuff, 3)
     };
 }

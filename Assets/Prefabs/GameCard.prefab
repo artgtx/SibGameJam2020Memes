@@ -171,10 +171,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sr: {fileID: 1426185070689965190}
-  sprites:
-  - {fileID: 21300000, guid: 01225ab80ac7b7b4a913aa6f89ce50cc, type: 3}
-  - {fileID: 21300000, guid: eb44f2b53d919ea4c8d8fabf4e527ffc, type: 3}
-  - {fileID: 21300000, guid: 68339c1ce4d1a0445b5c701514272d21, type: 3}
+  gender_: 0
+  media_: 0
+  active: {fileID: 21300000, guid: 302b26adf8a8c4a6aa8d7056b7defae0, type: 3}
+  unactive: {fileID: 21300000, guid: 75838f380773b4c8f80d7483f6be5ae5, type: 3}
 --- !u!1 &5521241684406236900
 GameObject:
   m_ObjectHideFlags: 0

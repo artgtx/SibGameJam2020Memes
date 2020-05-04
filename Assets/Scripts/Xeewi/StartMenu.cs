@@ -6,55 +6,43 @@ using UnityEngine.UI;
 
 public class StartMenu : MonoBehaviour
 {
-    [SerializeField] private Text creatorsText;
     [SerializeField] private Text depictionText;
-
+        
     [SerializeField] private GameObject creatorsPanel;
     [SerializeField] private GameObject goToStartMenuButton;
 
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject aboutPanel;
-    [SerializeField] private GameObject startGamePanel;
+    [SerializeField] private GameObject startGamePanel1;
+    [SerializeField] private GameObject startGamePanel2;
+    [SerializeField] private GameObject startGamePanel3;
 
     [SerializeField] private AudioClip buttonSound;
+    [SerializeField] private GameObject backgroundSoundObject;
+    [SerializeField] private GameObject creduitsSoundObject;
     private AudioSource audio;
+
+    private bool _isCredits;
 
     [SerializeField] private float speedPrintText = 0.1f;
 
-    private string[] texts = new string[3];
-
     private int indexText;
 
-    private const string textOne = "Text 1";
-    private const string textTwo = "Text 2";
-    private const string textThree = "Text 3";
-
-    private const string CreatorsString = "Программист\n" +
-        "Программист\n" +
-        "Программист\n" +
-        "Художник\n" +
-        "Художник\n" +
-        "Художник\n"+
-        "Интерфейс\n" +
-        "Геймдизайн\n";
-  
+    [SerializeField] private Text[] creatorsTexts;
+    private string[] creatorNamesTexts;
     void Awake()
     {
-        texts[0] = textOne;
-        texts[1] = textTwo;
-        texts[2] = textThree;
-
         audio = GetComponent<AudioSource>();
 
+        creatorNamesTexts = new string[creatorsTexts.Length];
+
+        for (var i = 0; i < creatorsTexts.Length; i++)
+        {
+            creatorNamesTexts[i] = creatorsTexts[i].text;
+            creatorsTexts[i].text = string.Empty;
+        }
+
         ShowStartMenu();
-    }
-
-    public void OnPlayButton()
-    {
-        menuPanel.SetActive(false);
-        startGamePanel.SetActive(true);
-
-        StartCoroutine(ShowCreators(depictionText, texts[indexText++]));
     }
 
     public void PlayClickButton()
@@ -64,15 +52,28 @@ public class StartMenu : MonoBehaviour
 
     public void OnStartGameButton()
     {
-        if(indexText == texts.Length)
-        {
-            SceneManager.LoadScene("Game");
-        }
-        else
-        {
-            StartCoroutine(ShowCreators(depictionText, texts[indexText++]));
-        }
+        menuPanel.SetActive(false);
+        startGamePanel1.SetActive(true);
     }
+
+    public void OnContinueButton1()
+    {
+        startGamePanel1.SetActive(false);
+        startGamePanel2.SetActive(true);
+    }
+
+    public void OnContinueButton2()
+    {
+        startGamePanel2.SetActive(false);
+        startGamePanel3.SetActive(true);
+    }
+
+    public void StartGame()
+    {
+        SceneManager.LoadScene("Game");
+    }
+
+
     public void OnAboutButton()
     {
         menuPanel.SetActive(false);
@@ -80,35 +81,54 @@ public class StartMenu : MonoBehaviour
     }
     public void OnCreatorsButton()
     {
+        backgroundSoundObject.GetComponent<AudioSource>().Stop();
+        creduitsSoundObject.GetComponent<AudioSource>().Play();
+
         menuPanel.SetActive(false);
         creatorsPanel.SetActive(true);
         goToStartMenuButton.SetActive(false);
 
-        StartCoroutine(ShowCreators(creatorsText, CreatorsString));
+        StartCoroutine(SpellingCreators());
+
+        _isCredits = true;
     }
 
-    IEnumerator ShowCreators(Text outputText, string inputText)
+    IEnumerator Spelling(Text outputText, string inputText)
     {
-        for (var i = 0; i < inputText.Length; i++)
+        for (var i = 0; i <= inputText.Length; i++)
         {
             outputText.text = inputText.Substring(0, i);
 
             yield return new WaitForSeconds(speedPrintText);
         }
+    }
+
+    IEnumerator SpellingCreators()
+    {
+        for (var i = 0; i < creatorNamesTexts.Length; i++)
+        {
+            var text = creatorNamesTexts[i];
+            yield return Spelling(creatorsTexts[i], text);
+        }
 
         goToStartMenuButton.SetActive(true);
     }
-
     private void ShowStartMenu()
     {
         menuPanel.SetActive(true);
         creatorsPanel.SetActive(false);
         aboutPanel.SetActive(false);
-        startGamePanel.SetActive(false);
     }
 
     public void OnBackToStartMenu()
     {
+        if (_isCredits)
+        {
+            backgroundSoundObject.GetComponent<AudioSource>().Play();
+            creduitsSoundObject.GetComponent<AudioSource>().Stop();
+        }
+        _isCredits = false;
+
         ShowStartMenu();
     }
 

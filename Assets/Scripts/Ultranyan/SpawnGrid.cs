@@ -8,10 +8,15 @@ public class SpawnGrid : MonoBehaviour
     public GameObject[] gridElements;
     private int playerPos;
     [SerializeField] private GameObject playerCard;
+
+    [SerializeField] private float playerSpeed;
+    [SerializeField] private float cardSpeed;
     
     
-    public IEnumerator MoveToPosition(Transform transform, Vector3 position, float timeToMove,int cardposition,Struct.CardType type_)
+    
+    public IEnumerator MoveToPosition(Transform transform, Vector3 position, int cardposition,Struct.CardType type_)
     {
+        var timeToMove = playerSpeed;
         transform.gameObject.GetComponent<playerAnimationState>().walk();
         var currentPos = transform.position;
         var t = 0f;
@@ -38,7 +43,7 @@ public class SpawnGrid : MonoBehaviour
     public IEnumerator MoveToCardsCoroutine(int card,int cardTo,bool isLast)
     {
         
-        float timeToMove = 0.3f;
+        float timeToMove = cardSpeed;
         Transform transform=gridElements[card].GetComponent<GridElement>().currentCard.transform;
         Vector3 position=gridElements[cardTo].transform.position;
         gridElements[cardTo].GetComponent<GridElement>().currentCard = transform.gameObject;
@@ -80,9 +85,8 @@ public class SpawnGrid : MonoBehaviour
         //вызов onBump
         targetGridElement.currentCard.GetComponent<Card>().OnBump();
         Struct.CardType type_=targetGridElement.currentCard.GetComponent<Card>().type_;
-        Destroy(targetGridElement.currentCard);
-        
-        
+        FindObjectOfType<bonusParticle>().sendBonus(targetGridElement.currentCard.GetComponent<Card>().type_,targetGridElement.currentCard.GetComponent<Card>().gender_,targetGridElement.currentCard.GetComponent<Card>().media_,targetGridElement.currentCard.transform.position);
+        //Destroy(targetGridElement.currentCard);
         targetGridElement.currentCard = playerGridElement.currentCard;
         playerGridElement.currentCard = null;
         
@@ -91,13 +95,13 @@ public class SpawnGrid : MonoBehaviour
             VARIABLE.OnIdle();
         }
 
-        StartCoroutine(MoveToPosition(targetGridElement.currentCard.transform,position,0.3f,cardID,type_));
+        StartCoroutine(MoveToPosition(targetGridElement.currentCard.transform,position,cardID,type_));
         
     }
 
     public void movePlayer(CheckSwipe.SwipeType typeMove)
     {
-        if (Singletone.canMove)
+        if (Singletone.canMove && Singletone.canGo)
         {
             switch (typeMove)
         {
@@ -347,9 +351,4 @@ public class SpawnGrid : MonoBehaviour
         }
     }
 
-    
-    public void MixCards()
-    {
-
-    }
 }

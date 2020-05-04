@@ -265,4 +265,4 @@ MonoBehaviour:
   _startProgress: 0
   spriteBad: {fileID: 21300000, guid: ab40a5f2d44f6b14d825d469c8cbed91, type: 3}
   spriteNormal: {fileID: 21300000, guid: 4260951f444655947babb12575c84dd0, type: 3}
-  spriteGood: {fileID: 21300000, guid: c092efb01d128ce428db6ffa16c9a6d7, type: 3}
+  spriteGood: {fileID: 21300000, guid: ed4340b31564f7d4cba1345aa7ef91b6, type: 3}

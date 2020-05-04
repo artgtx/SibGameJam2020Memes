@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEditor;
+using UnityEngine.UI;
 
 public class StatusBarController : MonoBehaviour
 {
@@ -37,17 +38,12 @@ public class StatusBarController : MonoBehaviour
 
         progressObject.transform.localScale = new Vector3(_x, _startProgress);
         _progress = _startProgress;
-
-
-        ChangeStatus(60);
     }
 
     public void ChangeStatus(float persent)
     {
         _needProgress = _maxProgress / 100 * persent;
         _needPersent = persent;
-        
-        //progressObject.GetComponent<SpriteRenderer>().color = _currentColor;
 
         lock (_locker)
         {
@@ -107,17 +103,17 @@ public class StatusBarController : MonoBehaviour
     private void ChangeColor()
     {
         float persent = _progress * 100 / _maxProgress;
-        if(persent < 20)
+        if(persent <= 20)
         {
             progressObject.GetComponent<SpriteRenderer>().sprite = spriteBad;
             return;
         }
-        if(persent >= 20 && persent < 70)
+        if(persent > 20 && persent < 70)
         {
             progressObject.GetComponent<SpriteRenderer>().sprite = spriteNormal;
             return;
         }
-        if (persent > 70)
+        if (persent >= 70)
         {
             progressObject.GetComponent<SpriteRenderer>().sprite = spriteGood;
         }
